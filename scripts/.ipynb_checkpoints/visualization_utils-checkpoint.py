@@ -89,9 +89,79 @@ def plot_close_and_volume(df, date_col='Date', close_col='Close', volume_col='Vo
     plt.show()
 
 
-def plot_candlestick_chart(df, date_col='Date'):
+def plot_candlestick_chart(
+    df,
+    date_col='Date',
+    resample_period=None,
+    start_date=None,
+    end_date=None,
+    title='Candlestick Chart',
+    mav=(10, 20),
+    figsize=(14, 8),
+    style='yahoo',
+    auto_resample_threshold=300,
+    annotations=None
+):
     """
-    Plot a candlestick chart using mplfinance.
+    Enhanced candlestick chart function for better visualization.
+
+    Parameters:
+        df (pd.DataFrame): DataFrame containing stock data with 'Open', 'High', 'Low', 'Close', and 'Volume'.
+        date_col (str): The column name for the date (default: 'Date').
+        resample_period (str): Resampling frequency ('W' for weekly, 'M' for monthly, etc.).
+        start_date (str): Start date for filtering (e.g., '2023-01-01').
+        end_date (str): End date for filtering (e.g., '2023-06-30').
+        title (str): Title of the chart (default: 'Candlestick Chart').
+        mav (tuple): Tuple of moving average periods to plot (default: (10, 20)).
+        figsize (tuple): Size of the figure (default: (14, 8)).
+        style (str): Chart style (default: 'yahoo').
+        auto_resample_threshold (int): Automatically resample if the dataset has more rows than this value.
+        annotations (list of tuples): List of annotations in the form [(date, label), ...].
     """
-    candlestick_data = df.set_index(date_col)[['Open', 'High', 'Low', 'Close', 'Volume']]
-    mpf.plot(candlestick_data, type='candle', volume=True, style='yahoo', title='Candlestick Chart with Volume')
+    # Ensure the Date column is in datetime format
+    df[date_col] = pd.to_datetime(df[date_col])
+
+    # Filter by date range if specified
+    if start_date:
+        df = df[df[date_col] >= start_date]
+    if end_date:
+        df = df[df[date_col] <= end_date]
+
+    # Automatically resample if dataset is too large
+    if len(df) > auto_resample_threshold and not resample_period:
+        resample_period = 'W'  # Default to weekly resampling if not provided
+
+    # Resample data if resample_period is specified
+    if resample_period:
+        df = df.resample(resample_period, on=date_col).agg({
+            'Open': 'first',
+            'High': 'max',
+            'Low': 'min',
+            'Close': 'last',
+            'Volume': 'sum'
+        }).dropna()
+
+    # Set Date column as the index for mplfinance
+    df.set_index(date_col, inplace=True)
+
+    # Add annotations to the chart
+    add_plots = []
+    if annotations:
+        for date, label in annotations:
+            add_plots.append(
+                mpf.make_addplot(
+                    [df.loc[date, 'Close']], type='scatter', markersize=100, marker='^', color='red', secondary_y=False
+                )
+            )
+
+    # Plot the candlestick chart
+    mpf.plot(
+        df,
+        type='candle',
+        volume=True,
+        style=style,
+        title=title,
+        figsize=figsize,
+        mav=mav,
+        addplot=add_plots if annotations else None,
+    )

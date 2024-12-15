@@ -66,32 +66,3 @@ def plot_macd(df, date_col='Date', macd_col='MACD', signal_col='MACD_signal', hi
     plt.show()
 
 
-def plot_close_and_volume(df, date_col='Date', close_col='Close', volume_col='Volume'):
-    """
-    Plot the stock's close price and trading volume on dual axes.
-    """
-    fig, ax1 = plt.subplots(figsize=(14, 7))
-
-    # Plot close price
-    ax1.plot(df[date_col], df[close_col], label='Close Price', color='blue', linewidth=1.5)
-    ax1.set_xlabel('Date')
-    ax1.set_ylabel('Close Price', color='blue')
-    ax1.tick_params(axis='y', labelcolor='blue')
-
-    # Plot volume on a secondary y-axis
-    ax2 = ax1.twinx()
-    ax2.bar(df[date_col], df[volume_col], label='Volume', color='gray', alpha=0.3)
-    ax2.set_ylabel('Volume', color='gray')
-    ax2.tick_params(axis='y', labelcolor='gray')
-
-    fig.suptitle('Close Price and Volume')
-    fig.tight_layout()
-    plt.show()
-
-
-def plot_candlestick_chart(df, date_col='Date'):
-    """
-    Plot a candlestick chart using mplfinance.
-    """
-    candlestick_data = df.set_index(date_col)[['Open', 'High', 'Low', 'Close', 'Volume']]
-    mpf.plot(candlestick_data, type='candle', volume=True, style='yahoo', title='Candlestick Chart with Volume')
