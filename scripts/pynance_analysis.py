@@ -4,9 +4,8 @@ import matplotlib.pyplot as plt
 import mplfinance as mpf
 
 
-# ----------------------------------------
 # Data Loading
-# ----------------------------------------
+
 
 def fetch_data(symbol, start_date, end_date):
     """
@@ -26,9 +25,8 @@ def fetch_data(symbol, start_date, end_date):
     return data
 
 
-# ----------------------------------------
 # Technical Indicators
-# ----------------------------------------
+
 
 def calculate_indicators(data):
     """
@@ -96,9 +94,8 @@ def handle_nan_values(data):
     return data
 
 
-# ----------------------------------------
 # Visualization Functions
-# ----------------------------------------
+
 
 def plot_close_with_indicators(data):
     """
@@ -166,20 +163,8 @@ def plot_candlestick_chart(data):
     data.reset_index(inplace=True)  # Restore the original index
 
 
-# ----------------------------------------
-# Save Data
-# ----------------------------------------
 
-def save_to_csv(data, file_name):
-    """
-    Save the DataFrame to a CSV file.
-    """
-    data.to_csv(file_name, index=False)
-
-
-# ----------------------------------------
 # Main Workflow
-# ----------------------------------------
 
 if __name__ == "__main__":
     # Define the stock symbol and date range
@@ -200,5 +185,4 @@ if __name__ == "__main__":
     plot_bollinger_bands(data)
     plot_candlestick_chart(data)
 
-    # Save the resulting data
-    save_to_csv(data, 'pynance_analysis_results.csv')
+    
