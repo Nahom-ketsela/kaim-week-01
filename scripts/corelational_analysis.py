@@ -69,3 +69,5 @@ def merge_data(stock_data, daily_sentiment):
 def calculate_correlation(merged_data):
     correlation, p_value = pearsonr(merged_data['sentiment'], merged_data['daily_return'])
     return correlation, p_value
+
+
